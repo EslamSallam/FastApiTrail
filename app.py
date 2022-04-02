@@ -1,13 +1,9 @@
 from fastapi import FastAPI, Path, HTTPException, status
 from typing import Optional
-from pydantic import BaseModel
+
+from Item import Item
 
 app = FastAPI()
-
-class Item(BaseModel):
-    name: str
-    price: float
-    brand: Optional[str] = None
 
 
 # simple Get root Function
@@ -15,10 +11,12 @@ class Item(BaseModel):
 def home():
     return {"Data": "Test"}
 
+
 # simple Get About function
 @app.get("/about")
 def about():
     return {"Data": "About"}
+
 
 inventory = {
     1: {
@@ -28,10 +26,13 @@ inventory = {
     }
 }
 
+
 # Path Params Example
 @app.get("/get-item/{item_id}/{name}")
-def get_item(item_id: int = Path(None, description="The Id of the item you would like to view", gt=0, lt=2), name: str = None):
+def get_item(item_id: int = Path(None, description="The Id of the item you would like to view", gt=0, lt=2),
+             name: str = None):
     return inventory[item_id]
+
 
 # Query params Example
 # passing test case: http://127.0.0.1:8000/get-by-name/1?name=Milk&test=1
@@ -41,6 +42,7 @@ def get_item(*, item_id: int, name: Optional[str] = None, test: int):
         if inventory[item_id]["name"] == name:
             return inventory[item_id]
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item name not found")
+
 
 # simple post request implementation
 @app.post("/create-item/{item_id}")
